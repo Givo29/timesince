@@ -31,7 +31,7 @@
     <el-button id="go-button" type="primary" v-on:click="calculateTime"
       >Go!</el-button
     >
-    <p>{{ timeSince }} {{ value.display }}!</p>
+    <h2>{{ timeSince }} {{ value.display }}</h2>
   </div>
 </template>
 
@@ -49,12 +49,6 @@ export default {
     currentDate.setFullYear(currentDate.getFullYear() - 1);
 
     return {
-      dateShortcuts: [
-        {
-          text: "Today",
-          onClick: () => new Date(),
-        },
-      ],
       startDate: currentDate,
       endDate: new Date(),
       timeSince: 365,
@@ -62,6 +56,12 @@ export default {
         selected: "days",
         display: "days",
       },
+      dateShortcuts: [
+        {
+          text: "Today",
+          date: new Date(),
+        },
+      ],
       options: [
         {
           value: 1000 * 60,
@@ -157,6 +157,11 @@ export default {
 
 .el-select-dropdown__item {
   font-family: Avenir, Helvetica, Arial, sans-serif;
+}
+
+.el-select {
+  width: 8.5rem;
+  margin-bottom: 10px;
 }
 
 #go-button {
