@@ -41,17 +41,21 @@ export default {
     DatePicker,
   },
   data() {
-    let currentDate = new Date();
-    currentDate.setFullYear(currentDate.getFullYear() - 1);
+    let startDate = new Date();
+    startDate.setFullYear(startDate.getFullYear() - 1);
+    startDate.setHours(0, 0, 0, 0);
+    
+    let endDate = new Date();
+    endDate.setHours(0, 0, 0, 0);
 
     return {
-      startDate: currentDate,
-      endDate: new Date(),
+      startDate: startDate,
+      endDate: endDate,
       timeSince: 365,
       dateShortcuts: [
         {
           text: "Today",
-          onClick: () => new Date(),
+          onClick: () => new Date(new Date().setHours(0, 0, 0, 0)),
         },
       ],
     };
