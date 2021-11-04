@@ -19,7 +19,7 @@
         ></date-picker>
       </div>
     </div>
-    <el-select v-model="value.selected" placeholder="Select">
+    <!-- <el-select v-model="value.selected" placeholder="Select">
       <el-option
         v-for="item in options"
         :key="item.value"
@@ -31,7 +31,13 @@
     <el-button id="go-button" type="primary" v-on:click="calculateTime"
       >Go!</el-button
     >
-    <h2>{{ timeSince }} {{ value.display }}</h2>
+    <h2>{{ timeSince }} {{ value.display }}</h2> -->
+    <h1>Results:</h1>
+    <h2>Hours: {{ calculateHours() }}</h2>
+    <h2>Days: {{ calculateDays() }}</h2>
+    <h2>Weeks: {{ calculateWeeks() }}</h2>
+    <h2>Months: {{ calculateMonths() }}</h2>
+    <h2>Years: {{ calculateYears() }}</h2>
   </div>
 </template>
 
@@ -52,45 +58,38 @@ export default {
       startDate: currentDate,
       endDate: new Date(),
       timeSince: 365,
-      value: {
-        selected: "days",
-        display: "days",
-      },
       dateShortcuts: [
         {
           text: "Today",
-          date: new Date(),
-        },
-      ],
-      options: [
-        {
-          value: 1000 * 60,
-          label: "minutes",
-        },
-        {
-          value: 1000 * 60 * 60,
-          label: "hours",
-        },
-        {
-          value: 1000 * 60 * 60 * 24,
-          label: "days",
-        },
-        {
-          value: 1000 * 60 * 60 * 24 * 7,
-          label: "weeks",
-        },
-        {
-          value: 0,
-          label: "months",
-        },
-        {
-          value: 0,
-          label: "years",
+          onClick: () => new Date(),
         },
       ],
     };
   },
   methods: {
+    calculateHours: function () {
+      return Math.floor((this.endDate - this.startDate) / (1000 * 60 * 60));
+    },
+    calculateDays: function () {
+      return Math.floor(
+        (this.endDate - this.startDate) / (1000 * 60 * 60 * 24)
+      );
+    },
+    calculateWeeks: function () {
+      return Math.round(
+        (this.endDate - this.startDate) / (1000 * 60 * 60 * 24 * 7)
+      );
+    },
+    calculateMonths: function () {
+      return Math.round(
+        (this.endDate.getFullYear() - this.startDate.getFullYear()) * 12 +
+          this.endDate.getMonth() -
+          this.startDate.getMonth()
+      );
+    },
+    calculateYears: function () {
+      return Math.round(this.endDate.getFullYear() - this.startDate.getFullYear());
+    },
     calculateTime: function () {
       let date1 = Date.UTC(
         this.startDate.getFullYear(),
@@ -153,18 +152,5 @@ export default {
   margin: 0 auto 2rem auto;
   padding-right: 10px;
   padding-left: 10px;
-}
-
-.el-select-dropdown__item {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-}
-
-.el-select {
-  width: 8.5rem;
-  margin-bottom: 10px;
-}
-
-#go-button {
-  margin-left: 10px;
 }
 </style>

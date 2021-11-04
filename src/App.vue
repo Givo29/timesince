@@ -34,6 +34,10 @@ body {
   width: 100%;
 }
 
+h1 {
+  font-size: 2.5rem;
+}
+
 .container {
   width: 100%;
   height: 80%;
