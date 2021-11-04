@@ -1,9 +1,7 @@
 <template>
   <div id="app">
     <h1>Time-Since</h1>
-    <div class="container">
-      <Calculator />
-    </div>
+    <Calculator />
   </div>
 </template>
 
@@ -20,7 +18,9 @@ export default {
 
 <style>
 body {
-  background: #22223B;
+  background: #22223b;
+  height: 100vh;
+  margin: 0;
 }
 
 #app {
@@ -28,17 +28,18 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  /* color: #2c3e50; */
-  color: #F2E9E4;
-  height: 90vh;
-  width: 100%;
+  color: #f2e9e4;
+  height: 100%;
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100%;
+  min-height: 100%;
 }
 
-.container {
-  width: 100%;
-  height: 80%;
-  display: flex;
-  justify-items: center;
-  align-items: center;
+#app > h1 {
+  flex-basis: 100%;
+  font-size: 2.5rem;
 }
 </style>

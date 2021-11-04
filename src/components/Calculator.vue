@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container">
+  <div id="main">
     <div class="container">
       <div>
         <h2>Start Date</h2>
@@ -19,19 +19,15 @@
         ></date-picker>
       </div>
     </div>
-    <el-select v-model="value.selected" placeholder="Select">
-      <el-option
-        v-for="item in options"
-        :key="item.value"
-        :label="item.label"
-        :value="item.label"
-      >
-      </el-option>
-    </el-select>
-    <el-button id="go-button" type="primary" v-on:click="calculateTime"
-      >Go!</el-button
-    >
-    <h2>{{ timeSince }} {{ value.display }}</h2>
+
+    <div class="results">
+      <h2 class="result">Minutes: {{ calculateMinutes() }}</h2>
+      <h2 class="result">Hours: {{ calculateHours() }}</h2>
+      <h2 class="result">Days: {{ calculateDays() }}</h2>
+      <h2 class="result">Weeks: {{ calculateWeeks() }}</h2>
+      <h2 class="result">Months: {{ calculateMonths() }}</h2>
+      <h2 class="result">Years: {{ calculateYears() }}</h2>
+    </div>
   </div>
 </template>
 
@@ -52,95 +48,83 @@ export default {
       startDate: currentDate,
       endDate: new Date(),
       timeSince: 365,
-      value: {
-        selected: "days",
-        display: "days",
-      },
       dateShortcuts: [
         {
           text: "Today",
-          date: new Date(),
-        },
-      ],
-      options: [
-        {
-          value: 1000 * 60,
-          label: "minutes",
-        },
-        {
-          value: 1000 * 60 * 60,
-          label: "hours",
-        },
-        {
-          value: 1000 * 60 * 60 * 24,
-          label: "days",
-        },
-        {
-          value: 1000 * 60 * 60 * 24 * 7,
-          label: "weeks",
-        },
-        {
-          value: 0,
-          label: "months",
-        },
-        {
-          value: 0,
-          label: "years",
+          onClick: () => new Date(),
         },
       ],
     };
   },
+
   methods: {
-    calculateTime: function () {
-      let date1 = Date.UTC(
-        this.startDate.getFullYear(),
-        this.startDate.getMonth(),
-        this.startDate.getDate(),
-        this.startDate.getHours(),
-        this.startDate.getMinutes()
-      );
-      let date2 = Date.UTC(
-        this.endDate.getFullYear(),
-        this.endDate.getMonth(),
-        this.endDate.getDate(),
-        this.endDate.getHours(),
-        this.endDate.getMinutes()
-      );
-      this.value.display = this.value.selected;
-
-      if (this.value.selected === "months") {
-        this.timeSince = Math.floor(
-          (this.endDate.getFullYear() - this.startDate.getFullYear()) * 12 +
-            (this.endDate.getMonth() - this.startDate.getMonth())
-        );
-        return;
-      }
-      if (this.value.selected === "years") {
-        this.timeSince = Math.floor(
-          this.endDate.getFullYear() - this.startDate.getFullYear()
-        );
-        return;
-      }
-
-      this.timeSince = Math.floor(
-        (date2 - date1) /
-          this.options.find((option) => option.label === this.value.selected)
-            .value
-      );
-    },
     startDisable: function (date) {
       return date > this.endDate;
     },
     endDisable: function (date) {
       return date < this.startDate;
     },
+    getUTCDates: function () {
+      return {
+        start: Date.UTC(
+          this.startDate.getFullYear(),
+          this.startDate.getMonth(),
+          this.startDate.getDate(),
+          this.startDate.getHours(),
+          this.startDate.getMinutes(),
+          this.startDate.getSeconds(),
+          this.startDate.getMilliseconds()
+        ),
+        end: Date.UTC(
+          this.endDate.getFullYear(),
+          this.endDate.getMonth(),
+          this.endDate.getDate(),
+          this.endDate.getHours(),
+          this.endDate.getMinutes(),
+          this.endDate.getSeconds(),
+          this.endDate.getMilliseconds()
+        ),
+      };
+    },
+    calculateMinutes: function () {
+      let UTCDates = this.getUTCDates();
+      return Math.floor((UTCDates.end - UTCDates.start) / (1000 * 60));
+    },
+    calculateHours: function () {
+      let UTCDates = this.getUTCDates();
+      return Math.floor((UTCDates.end - UTCDates.start) / (1000 * 60 * 60));
+    },
+    calculateDays: function () {
+      let UTCDates = this.getUTCDates();
+      return Math.floor(
+        (UTCDates.end - UTCDates.start) / (1000 * 60 * 60 * 24)
+      );
+    },
+    calculateWeeks: function () {
+      let UTCDates = this.getUTCDates();
+      return Math.round(
+        (UTCDates.end - UTCDates.start) / (1000 * 60 * 60 * 24 * 7)
+      );
+    },
+    calculateMonths: function () {
+      return Math.round(
+        (this.endDate.getFullYear() - this.startDate.getFullYear()) * 12 +
+          this.endDate.getMonth() -
+          this.startDate.getMonth()
+      );
+    },
+    calculateYears: function () {
+      return Math.round(
+        this.endDate.getFullYear() - this.startDate.getFullYear()
+      );
+    },
   },
 };
 </script>
 
 <style scoped>
-.main-container {
-  width: 100%;
+#main {
+  width: 90%;
 }
 
 .container {
@@ -148,23 +132,61 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
   column-gap: 8%;
-  align-items: center;
-  width: 90%;
-  margin: 0 auto 2rem auto;
-  padding-right: 10px;
-  padding-left: 10px;
+  align-items: bottom;
+  margin: 0 auto 5rem auto;
 }
 
-.el-select-dropdown__item {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+.results {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0;
+  text-align: center;
+  margin: auto;
+  width: 30%;
 }
 
-.el-select {
-  width: 8.5rem;
-  margin-bottom: 10px;
+.results > * {
+  flex: 1 1 50%;
 }
 
-#go-button {
-  margin-left: 10px;
+@media only screen and (max-width: 1500px) {
+  .results {
+    width: 50%;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .results {
+    width: 75%;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .results > * {
+    width: 100%;
+  }
+}
+
+@media only screen and (max-width: 650px) {
+  .results > * {
+    flex: 1 1 100%;
+  }
+}
+
+.result {
+  margin: 0 auto 0 auto;
+}
+
+.result:after {
+  content: "";
+  width: 30%;
+  color: #c9184a;
+  display: flex;
+  justify-content: center;
+  line-height: 0.1em;
+  font-size: 14px;
+  font-family: cursive;
+  margin: 10px auto 10px auto;
+  border-bottom: 1px solid #c9184a;
 }
 </style>
