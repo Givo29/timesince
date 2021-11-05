@@ -1,6 +1,6 @@
 # Timesince
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-![Heroku](https://pyheroku-badge.herokuapp.com/?app=timesince&path=/&style=flat)
+![Heroku](https://pyheroku-badge.herokuapp.com/?app=times-since&path=/&style=flat)
  
 Timesince is a minimal app to easily calculate the time between dates on the web, built with Vue.js, deployed on heroku.
 
