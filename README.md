@@ -1,24 +1,21 @@
-# timesince
+# Timesince
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+![Heroku](https://pyheroku-badge.herokuapp.com/?app=timesince&path=/&style=flat)
+ 
 
-## Project setup
-```
-npm install
-```
+Timesince is a minimal app to easily calculate the time between dates on the web, built with Vue.js, deployed on heroku.
 
-### Compiles and hot-reloads for development
+Try it at [https://www.times-since.com](https://www.times-since.com)
+## Usage
 ```
-npm run serve
-```
+$ npm i
 
-### Compiles and minifies for production
-```
-npm run build
-```
+# For development server:
+$ npm run serve
 
-### Lints and fixes files
-```
-npm run lint
+# To build for production:
+$ npm run build
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Contributing
+Please log any suggestions or bugs as an issue, or pull requests are also most welcome.
