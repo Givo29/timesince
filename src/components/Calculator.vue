@@ -21,12 +21,7 @@
     </div>
 
     <div class="results">
-      <h2 class="result">Minutes: {{ calculateMinutes() }}</h2>
-      <h2 class="result">Hours: {{ calculateHours() }}</h2>
-      <h2 class="result">Days: {{ calculateDays() }}</h2>
-      <h2 class="result">Weeks: {{ calculateWeeks() }}</h2>
-      <h2 class="result">Months: {{ calculateMonths() }}</h2>
-      <h2 class="result">Years: {{ calculateYears() }}</h2>
+      <h2 class="result" v-for="unit in filteredUnits" v-bind:key="unit.label">{{ capitalizedLabel(unit.label) }}: {{ unit.value }}</h2>
     </div>
   </div>
 </template>
@@ -41,16 +36,9 @@ export default {
     DatePicker,
   },
   data() {
-    let startDate = new Date();
-    startDate.setFullYear(startDate.getFullYear() - 1);
-    startDate.setHours(0, 0, 0, 0);
-    
-    let endDate = new Date();
-    endDate.setHours(0, 0, 0, 0);
-
     return {
-      startDate: startDate,
-      endDate: endDate,
+      startDate: 0,
+      endDate: 0,
       timeSince: 365,
       dateShortcuts: [
         {
@@ -58,6 +46,42 @@ export default {
           onClick: () => new Date(new Date().setHours(0, 0, 0, 0)),
         },
       ],
+      units: [
+        {
+          active: true,
+          label: "minutes",
+          value: 0,
+          multiplier: 1000 * 60
+        },
+        {
+          active: true,
+          label: "hours",
+          value: 0,
+          multiplier: 1000 * 60 * 60
+        },
+        {
+          active: true,
+          label: "days",
+          value: 0,
+          multiplier: 1000 * 60 * 60 * 24
+        },
+        {
+          active: true,
+          label: "weeks",
+          value: 0,
+          multiplier: 1000 * 60 * 60 * 24
+        },
+        {
+          active: true,
+          label: "months",
+          value: 0,
+        },
+        {
+          active: true,
+          label: "years",
+          value: 0,
+        }
+      ]
     };
   },
 
@@ -90,26 +114,6 @@ export default {
         ),
       };
     },
-    calculateMinutes: function () {
-      let UTCDates = this.getUTCDates();
-      return Math.floor((UTCDates.end - UTCDates.start) / (1000 * 60));
-    },
-    calculateHours: function () {
-      let UTCDates = this.getUTCDates();
-      return Math.floor((UTCDates.end - UTCDates.start) / (1000 * 60 * 60));
-    },
-    calculateDays: function () {
-      let UTCDates = this.getUTCDates();
-      return Math.floor(
-        (UTCDates.end - UTCDates.start) / (1000 * 60 * 60 * 24)
-      );
-    },
-    calculateWeeks: function () {
-      let UTCDates = this.getUTCDates();
-      return Math.round(
-        (UTCDates.end - UTCDates.start) / (1000 * 60 * 60 * 24 * 7)
-      );
-    },
     calculateMonths: function () {
       return Math.round(
         (this.endDate.getFullYear() - this.startDate.getFullYear()) * 12 +
@@ -121,6 +125,44 @@ export default {
       return Math.round(
         this.endDate.getFullYear() - this.startDate.getFullYear()
       );
+    },
+    capitalizedLabel: (label) => label.charAt(0).toUpperCase() + label.slice(1)
+  },
+  mounted() {
+    let startDate = new Date();
+    startDate.setFullYear(startDate.getFullYear() - 1);
+    startDate.setHours(0, 0, 0, 0);
+    
+    let endDate = new Date();
+    endDate.setHours(0, 0, 0, 0);
+
+    this.startDate = startDate;
+    this.endDate = endDate;
+  },
+  computed: {
+    filteredUnits: function () {
+      return this.units.filter((unit) => unit.active)
+    },
+  },
+  watch: {
+    endDate: function () {
+      this.units.forEach((unit) => {
+        if (unit.label === "months") return this.calculateMonths();
+        if (unit.label === "years") return this.calculateYears();
+
+        let UTCDates = this.getUTCDates();
+        unit.value = Math.round((UTCDates.end - UTCDates.start) / unit.multiplier);
+      });
+
+    },
+    startDate: function () {
+      this.units.forEach((unit) => {
+        if (unit.label === "months") return unit.value = this.calculateMonths();
+        if (unit.label === "years") return unit.value = this.calculateYears();
+
+        let UTCDates = this.getUTCDates();
+        unit.value = Math.round((UTCDates.end - UTCDates.start) / unit.multiplier);
+      })
     },
   },
 };
@@ -178,7 +220,7 @@ export default {
 }
 
 .result {
-  margin: 0 auto 0 auto;
+  margin: 0 auto 1em auto;
 }
 
 .result:after {
