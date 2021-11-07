@@ -21,7 +21,9 @@
     </div>
 
     <div class="results">
-      <h2 class="result" v-for="unit in filteredUnits" v-bind:key="unit.label">{{ capitalizedLabel(unit.label) }}: {{ unit.value }}</h2>
+      <h2 class="result" v-for="unit in filteredUnits" v-bind:key="unit.label">
+        {{ capitalizedLabel(unit.label) }}: {{ unit.value }}
+      </h2>
     </div>
   </div>
 </template>
@@ -34,6 +36,17 @@ export default {
   name: "Calculator",
   components: {
     DatePicker,
+  },
+  mounted() {
+    let startDate = new Date();
+    startDate.setFullYear(startDate.getFullYear() - 1);
+    startDate.setHours(0, 0, 0, 0);
+
+    let endDate = new Date();
+    endDate.setHours(0, 0, 0, 0);
+
+    this.startDate = startDate;
+    this.endDate = endDate;
   },
   data() {
     return {
@@ -51,25 +64,25 @@ export default {
           active: true,
           label: "minutes",
           value: 0,
-          multiplier: 1000 * 60
+          multiplier: 1000 * 60,
         },
         {
           active: true,
           label: "hours",
           value: 0,
-          multiplier: 1000 * 60 * 60
+          multiplier: 1000 * 60 * 60,
         },
         {
           active: true,
           label: "days",
           value: 0,
-          multiplier: 1000 * 60 * 60 * 24
+          multiplier: 1000 * 60 * 60 * 24,
         },
         {
           active: true,
           label: "weeks",
           value: 0,
-          multiplier: 1000 * 60 * 60 * 24
+          multiplier: 1000 * 60 * 60 * 24,
         },
         {
           active: true,
@@ -80,11 +93,10 @@ export default {
           active: true,
           label: "years",
           value: 0,
-        }
-      ]
+        },
+      ],
     };
   },
-
   methods: {
     startDisable: function (date) {
       return date > this.endDate;
@@ -126,22 +138,11 @@ export default {
         this.endDate.getFullYear() - this.startDate.getFullYear()
       );
     },
-    capitalizedLabel: (label) => label.charAt(0).toUpperCase() + label.slice(1)
-  },
-  mounted() {
-    let startDate = new Date();
-    startDate.setFullYear(startDate.getFullYear() - 1);
-    startDate.setHours(0, 0, 0, 0);
-    
-    let endDate = new Date();
-    endDate.setHours(0, 0, 0, 0);
-
-    this.startDate = startDate;
-    this.endDate = endDate;
+    capitalizedLabel: (label) => label.charAt(0).toUpperCase() + label.slice(1),
   },
   computed: {
     filteredUnits: function () {
-      return this.units.filter((unit) => unit.active)
+      return this.units.filter((unit) => unit.active);
     },
   },
   watch: {
@@ -151,18 +152,22 @@ export default {
         if (unit.label === "years") return this.calculateYears();
 
         let UTCDates = this.getUTCDates();
-        unit.value = Math.round((UTCDates.end - UTCDates.start) / unit.multiplier);
+        unit.value = Math.round(
+          (UTCDates.end - UTCDates.start) / unit.multiplier
+        );
       });
-
     },
     startDate: function () {
       this.units.forEach((unit) => {
-        if (unit.label === "months") return unit.value = this.calculateMonths();
-        if (unit.label === "years") return unit.value = this.calculateYears();
+        if (unit.label === "months")
+          return (unit.value = this.calculateMonths());
+        if (unit.label === "years") return (unit.value = this.calculateYears());
 
         let UTCDates = this.getUTCDates();
-        unit.value = Math.round((UTCDates.end - UTCDates.start) / unit.multiplier);
-      })
+        unit.value = Math.round(
+          (UTCDates.end - UTCDates.start) / unit.multiplier
+        );
+      });
     },
   },
 };
