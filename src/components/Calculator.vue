@@ -176,14 +176,16 @@ export default {
 <style scoped>
 #main {
   width: 90%;
+  height: 100%;
 }
 
 .container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  height: 35%;
   column-gap: 8%;
-  align-items: bottom;
+  align-items: end;
   margin: 0 auto 5rem auto;
 }
 
@@ -193,28 +195,36 @@ export default {
   column-gap: 0;
   text-align: center;
   margin: auto;
-  width: 30%;
+  width: 45%;
 }
 
 .results > * {
   flex: 1 1 50%;
 }
 
-@media only screen and (max-width: 1500px) {
+@media only screen and (max-width: 1550px) {
+  .container {
+    height: 25%;
+  }
   .results {
-    width: 50%;
+    width: 60%;
   }
 }
 
 @media only screen and (max-width: 1200px) {
+  .container {
+    height: 15%;
+    margin-bottom: 8rem;
+  }
   .results {
     width: 75%;
   }
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 950px) {
   .results > * {
     width: 100%;
+    flex: 1 1 100%;
   }
 }
 

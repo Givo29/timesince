@@ -142,18 +142,6 @@ body {
   min-height: 100%;
 }
 
-@media only screen and (max-width: 1000px) {
-  #app {
-    row-gap: 10%;
-  }
-}
-
-@media only screen and (max-width: 507px) {
-  #app {
-    row-gap: 0;
-  }
-}
-
 #app > .header {
   width: 100%;
   display: flex;
