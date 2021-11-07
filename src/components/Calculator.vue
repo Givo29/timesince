@@ -37,6 +37,7 @@ export default {
   components: {
     DatePicker,
   },
+  props: ['settings'],
   mounted() {
     let startDate = new Date();
     startDate.setFullYear(startDate.getFullYear() - 1);
@@ -52,49 +53,48 @@ export default {
     return {
       startDate: 0,
       endDate: 0,
-      timeSince: 365,
       dateShortcuts: [
         {
           text: "Today",
           onClick: () => new Date(new Date().setHours(0, 0, 0, 0)),
         },
       ],
-      units: [
-        {
-          active: true,
-          label: "minutes",
-          value: 0,
-          multiplier: 1000 * 60,
-        },
-        {
-          active: true,
-          label: "hours",
-          value: 0,
-          multiplier: 1000 * 60 * 60,
-        },
-        {
-          active: true,
-          label: "days",
-          value: 0,
-          multiplier: 1000 * 60 * 60 * 24,
-        },
-        {
-          active: true,
-          label: "weeks",
-          value: 0,
-          multiplier: 1000 * 60 * 60 * 24,
-        },
-        {
-          active: true,
-          label: "months",
-          value: 0,
-        },
-        {
-          active: true,
-          label: "years",
-          value: 0,
-        },
-      ],
+      // units: [
+      //   {
+      //     active: true,
+      //     label: "minutes",
+      //     value: 0,
+      //     multiplier: 1000 * 60,
+      //   },
+      //   {
+      //     active: true,
+      //     label: "hours",
+      //     value: 0,
+      //     multiplier: 1000 * 60 * 60,
+      //   },
+      //   {
+      //     active: true,
+      //     label: "days",
+      //     value: 0,
+      //     multiplier: 1000 * 60 * 60 * 24,
+      //   },
+      //   {
+      //     active: true,
+      //     label: "weeks",
+      //     value: 0,
+      //     multiplier: 1000 * 60 * 60 * 24,
+      //   },
+      //   {
+      //     active: true,
+      //     label: "months",
+      //     value: 0,
+      //   },
+      //   {
+      //     active: true,
+      //     label: "years",
+      //     value: 0,
+      //   },
+      // ],
     };
   },
   methods: {
@@ -142,12 +142,12 @@ export default {
   },
   computed: {
     filteredUnits: function () {
-      return this.units.filter((unit) => unit.active);
+      return this.settings.units.filter((unit) => unit.active);
     },
   },
   watch: {
     endDate: function () {
-      this.units.forEach((unit) => {
+      this.settings.units.forEach((unit) => {
         if (unit.label === "months") return this.calculateMonths();
         if (unit.label === "years") return this.calculateYears();
 
@@ -158,7 +158,7 @@ export default {
       });
     },
     startDate: function () {
-      this.units.forEach((unit) => {
+      this.settings.units.forEach((unit) => {
         if (unit.label === "months")
           return (unit.value = this.calculateMonths());
         if (unit.label === "years") return (unit.value = this.calculateYears());
@@ -231,7 +231,6 @@ export default {
 .result:after {
   content: "";
   width: 30%;
-  color: #c9184a;
   display: flex;
   justify-content: center;
   line-height: 0.1em;
