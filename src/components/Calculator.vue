@@ -59,42 +59,6 @@ export default {
           onClick: () => new Date(new Date().setHours(0, 0, 0, 0)),
         },
       ],
-      // units: [
-      //   {
-      //     active: true,
-      //     label: "minutes",
-      //     value: 0,
-      //     multiplier: 1000 * 60,
-      //   },
-      //   {
-      //     active: true,
-      //     label: "hours",
-      //     value: 0,
-      //     multiplier: 1000 * 60 * 60,
-      //   },
-      //   {
-      //     active: true,
-      //     label: "days",
-      //     value: 0,
-      //     multiplier: 1000 * 60 * 60 * 24,
-      //   },
-      //   {
-      //     active: true,
-      //     label: "weeks",
-      //     value: 0,
-      //     multiplier: 1000 * 60 * 60 * 24,
-      //   },
-      //   {
-      //     active: true,
-      //     label: "months",
-      //     value: 0,
-      //   },
-      //   {
-      //     active: true,
-      //     label: "years",
-      //     value: 0,
-      //   },
-      // ],
     };
   },
   methods: {
