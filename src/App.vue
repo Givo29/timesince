@@ -98,6 +98,13 @@ export default {
             value: 0,
           },
         ],
+        general: {
+          "concat": {
+            type: "bool",
+            active: false,
+            label: "concatenate units"
+          }
+        }
       },
     };
   },

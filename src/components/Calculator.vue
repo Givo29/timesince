@@ -21,8 +21,11 @@
     </div>
 
     <div class="results">
-      <h2 class="result" v-for="unit in filteredUnits" v-bind:key="unit.label">
-        {{ capitalizedLabel(unit.label) }}: {{ unit.value }}
+      <!-- <h2 class="result" v-for="unit in filteredUnits" v-bind:key="unit.label">
+        {{ capitalisedLabel(unit.label) }}: {{ unit.value }}
+      </h2> -->
+      <h2 class="result" v-for="unit in units" v-bind:key="unit.key">
+        {{ capitalisedLabel(unit.key) }}: {{ unit.value }}
       </h2>
     </div>
   </div>
@@ -31,13 +34,14 @@
 <script>
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
+import { DateTime } from "luxon";
 
 export default {
   name: "Calculator",
   components: {
     DatePicker,
   },
-  props: ['settings'],
+  props: ["settings"],
   mounted() {
     let startDate = new Date();
     startDate.setFullYear(startDate.getFullYear() - 1);
@@ -59,6 +63,7 @@ export default {
           onClick: () => new Date(new Date().setHours(0, 0, 0, 0)),
         },
       ],
+      concat: this.settings.general.concat,
     };
   },
   methods: {
@@ -68,71 +73,50 @@ export default {
     endDisable: function (date) {
       return date < this.startDate;
     },
-    getUTCDates: function () {
-      return {
-        start: Date.UTC(
-          this.startDate.getFullYear(),
-          this.startDate.getMonth(),
-          this.startDate.getDate(),
-          this.startDate.getHours(),
-          this.startDate.getMinutes(),
-          this.startDate.getSeconds(),
-          this.startDate.getMilliseconds()
-        ),
-        end: Date.UTC(
-          this.endDate.getFullYear(),
-          this.endDate.getMonth(),
-          this.endDate.getDate(),
-          this.endDate.getHours(),
-          this.endDate.getMinutes(),
-          this.endDate.getSeconds(),
-          this.endDate.getMilliseconds()
-        ),
-      };
-    },
-    calculateMonths: function () {
-      return Math.round(
-        (this.endDate.getFullYear() - this.startDate.getFullYear()) * 12 +
-          this.endDate.getMonth() -
-          this.startDate.getMonth()
-      );
-    },
-    calculateYears: function () {
-      return Math.round(
-        this.endDate.getFullYear() - this.startDate.getFullYear()
-      );
-    },
-    capitalizedLabel: (label) => label.charAt(0).toUpperCase() + label.slice(1),
+    capitalisedLabel: (label) => label.charAt(0).toUpperCase() + label.slice(1),
+    updateUnits: function () {
+      if (this.concat.active === true) {
+        const values = DateTime.fromJSDate(this.endDate).diff(DateTime.fromJSDate(this.startDate), this.filteredUnits.map(unit => unit.label)).values;
+        console.log(values)
+        return this.filteredUnits.forEach((unit) => unit.value = values[unit.label]);
+      }
+
+      this.filteredUnits.forEach((unit) => {
+        unit.value = Math.round(DateTime.fromJSDate(this.endDate).diff(DateTime.fromJSDate(this.startDate), unit.label).values[unit.label]);
+      });
+    }
   },
   computed: {
     filteredUnits: function () {
       return this.settings.units.filter((unit) => unit.active);
     },
+    units: function () {
+      // let units = {};
+      const filteredUnitLabels = this.filteredUnits.map((unit) => unit.label);
+      if (this.concat.active === true) {
+        const values = DateTime.fromJSDate(this.endDate).diff(DateTime.fromJSDate(this.startDate), filteredUnitLabels).values;
+        return filteredUnitLabels.reduce((obj, x) => {
+          obj[filteredUnitLabels[x]] = values[filteredUnitLabels[x]];
+          return obj
+        }, {});
+      }
+
+      return filteredUnitLabels.reduce((obj, x) => {
+        obj[filteredUnitLabels[x]] = Math.round(DateTime.fromJSDate(this.endDate).diff(DateTime.fromJSDate(this.startDate), filteredUnitLabels[x]).values[filteredUnitLabels[x]]);
+        return obj
+      }, {});
+    }
   },
   watch: {
     endDate: function () {
-      this.settings.units.forEach((unit) => {
-        if (unit.label === "months") return this.calculateMonths();
-        if (unit.label === "years") return this.calculateYears();
-
-        let UTCDates = this.getUTCDates();
-        unit.value = Math.round(
-          (UTCDates.end - UTCDates.start) / unit.multiplier
-        );
-      });
+      this.updateUnits();
     },
     startDate: function () {
-      this.settings.units.forEach((unit) => {
-        if (unit.label === "months")
-          return (unit.value = this.calculateMonths());
-        if (unit.label === "years") return (unit.value = this.calculateYears());
-
-        let UTCDates = this.getUTCDates();
-        unit.value = Math.round(
-          (UTCDates.end - UTCDates.start) / unit.multiplier
-        );
-      });
+      this.updateUnits();
     },
+    concat: function () {
+      this.updateUnits();
+    }
   },
 };
 </script>

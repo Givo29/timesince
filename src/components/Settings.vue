@@ -1,31 +1,29 @@
 <template>
   <div id="main">
-    <div class="category">
-      <h1 class="category-title">Units</h1>
-      <div
-        class="options"
-        v-for="unit in settings.units"
-        v-bind:key="unit.label"
-      >
-        <div class="option">
-          <h2>{{ unit.label }}</h2>
-          <el-button-group>
-            <el-button
-              size="mini"
-              type="primary"
-              :plain="!unit.active"
-              @click="() => (unit.active = true)"
-              >True</el-button
-            >
-            <el-button
-              size="mini"
-              type="primary"
-              :plain="unit.active"
-              @click="() => (unit.active = false)"
-              >False</el-button
-            >
-          </el-button-group>
-        </div>
+    <div
+      class="category"
+      v-for="(options, title) in settings"
+      v-bind:key="title"
+    >
+      <h1 class="category-title">{{ capitalise(title) }}</h1>
+      <div class="option" v-for="option in options" v-bind:key="option.label">
+        <h2>{{ capitalise(option.label) }}</h2>
+        <el-button-group v-if="option.type == 'bool'">
+          <el-button
+            size="mini"
+            type="primary"
+            :plain="!option.active"
+            @click="() => (option.active = true)"
+            >True</el-button
+          >
+          <el-button
+            size="mini"
+            type="primary"
+            :plain="option.active"
+            @click="() => (option.active = false)"
+            >False</el-button
+          >
+        </el-button-group>
       </div>
     </div>
   </div>
@@ -36,6 +34,9 @@ export default {
   name: "Settings",
   components: {},
   props: ["settings"],
+  methods: {
+    capitalise: (title) => title.charAt(0).toUpperCase() + title.slice(1),
+  },
 };
 </script>
 
