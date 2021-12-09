@@ -21,11 +21,8 @@
     </div>
 
     <div class="results">
-      <!-- <h2 class="result" v-for="unit in filteredUnits" v-bind:key="unit.label">
-        {{ capitalisedLabel(unit.label) }}: {{ unit.value }}
-      </h2> -->
-      <h2 class="result" v-for="unit in units" v-bind:key="unit.key">
-        {{ capitalisedLabel(unit.key) }}: {{ unit.value }}
+      <h2 class="result" v-for="(value, unit) in units" v-bind:key="unit">
+        {{ capitalisedLabel(unit) }}: {{ value }}
       </h2>
     </div>
   </div>
@@ -42,21 +39,15 @@ export default {
     DatePicker,
   },
   props: ["settings"],
-  mounted() {
-    let startDate = new Date();
-    startDate.setFullYear(startDate.getFullYear() - 1);
-    startDate.setHours(0, 0, 0, 0);
-
-    let endDate = new Date();
-    endDate.setHours(0, 0, 0, 0);
-
-    this.startDate = startDate;
-    this.endDate = endDate;
-  },
   data() {
     return {
-      startDate: 0,
-      endDate: 0,
+      startDate: DateTime.local()
+        .plus({ years: -1 })
+        .set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
+        .toJSDate(),
+      endDate: DateTime.local()
+        .set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
+        .toJSDate(),
       dateShortcuts: [
         {
           text: "Today",
@@ -74,49 +65,34 @@ export default {
       return date < this.startDate;
     },
     capitalisedLabel: (label) => label.charAt(0).toUpperCase() + label.slice(1),
-    updateUnits: function () {
-      if (this.concat.active === true) {
-        const values = DateTime.fromJSDate(this.endDate).diff(DateTime.fromJSDate(this.startDate), this.filteredUnits.map(unit => unit.label)).values;
-        console.log(values)
-        return this.filteredUnits.forEach((unit) => unit.value = values[unit.label]);
-      }
-
-      this.filteredUnits.forEach((unit) => {
-        unit.value = Math.round(DateTime.fromJSDate(this.endDate).diff(DateTime.fromJSDate(this.startDate), unit.label).values[unit.label]);
-      });
-    }
   },
   computed: {
     filteredUnits: function () {
       return this.settings.units.filter((unit) => unit.active);
     },
     units: function () {
-      // let units = {};
       const filteredUnitLabels = this.filteredUnits.map((unit) => unit.label);
       if (this.concat.active === true) {
-        const values = DateTime.fromJSDate(this.endDate).diff(DateTime.fromJSDate(this.startDate), filteredUnitLabels).values;
+        const values = DateTime.fromJSDate(this.endDate).diff(
+          DateTime.fromJSDate(this.startDate),
+          filteredUnitLabels
+        ).values;
         return filteredUnitLabels.reduce((obj, x) => {
-          obj[filteredUnitLabels[x]] = values[filteredUnitLabels[x]];
-          return obj
+          obj[x] = values[x];
+          return obj;
         }, {});
       }
 
       return filteredUnitLabels.reduce((obj, x) => {
-        obj[filteredUnitLabels[x]] = Math.round(DateTime.fromJSDate(this.endDate).diff(DateTime.fromJSDate(this.startDate), filteredUnitLabels[x]).values[filteredUnitLabels[x]]);
-        return obj
+        obj[x] = Math.round(
+          DateTime.fromJSDate(this.endDate).diff(
+            DateTime.fromJSDate(this.startDate),
+            x
+          ).values[x]
+        );
+        return obj;
       }, {});
-    }
-  },
-  watch: {
-    endDate: function () {
-      this.updateUnits();
     },
-    startDate: function () {
-      this.updateUnits();
-    },
-    concat: function () {
-      this.updateUnits();
-    }
   },
 };
 </script>
