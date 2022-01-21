@@ -109,7 +109,7 @@ export default {
   justify-content: center;
   height: 35%;
   column-gap: 8%;
-  align-items: end;
+  align-items: flex-end;
   margin: 0 auto 5rem auto;
 }
 
