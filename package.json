@@ -11,7 +11,9 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "element-ui": "^2.15.6",
+    "luxon": "^2.1.1",
     "vue": "^2.6.11",
+    "vue-awesome": "^4.3.1",
     "vue2-datepicker": "^3.10.2"
   },
   "devDependencies": {

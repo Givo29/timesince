@@ -21,12 +21,9 @@
     </div>
 
     <div class="results">
-      <h2 class="result">Minutes: {{ calculateMinutes() }}</h2>
-      <h2 class="result">Hours: {{ calculateHours() }}</h2>
-      <h2 class="result">Days: {{ calculateDays() }}</h2>
-      <h2 class="result">Weeks: {{ calculateWeeks() }}</h2>
-      <h2 class="result">Months: {{ calculateMonths() }}</h2>
-      <h2 class="result">Years: {{ calculateYears() }}</h2>
+      <h2 class="result" v-for="(value, unit) in units" v-bind:key="unit">
+        {{ capitalisedLabel(unit) }}: {{ value }}
+      </h2>
     </div>
   </div>
 </template>
@@ -34,33 +31,32 @@
 <script>
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
+import { DateTime } from "luxon";
 
 export default {
   name: "Calculator",
   components: {
     DatePicker,
   },
+  props: ["settings"],
   data() {
-    let startDate = new Date();
-    startDate.setFullYear(startDate.getFullYear() - 1);
-    startDate.setHours(0, 0, 0, 0);
-    
-    let endDate = new Date();
-    endDate.setHours(0, 0, 0, 0);
-
     return {
-      startDate: startDate,
-      endDate: endDate,
-      timeSince: 365,
+      startDate: DateTime.local()
+        .plus({ years: -1 })
+        .set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
+        .toJSDate(),
+      endDate: DateTime.local()
+        .set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
+        .toJSDate(),
       dateShortcuts: [
         {
           text: "Today",
           onClick: () => new Date(new Date().setHours(0, 0, 0, 0)),
         },
       ],
+      concat: this.settings.general.concat,
     };
   },
-
   methods: {
     startDisable: function (date) {
       return date > this.endDate;
@@ -68,59 +64,34 @@ export default {
     endDisable: function (date) {
       return date < this.startDate;
     },
-    getUTCDates: function () {
-      return {
-        start: Date.UTC(
-          this.startDate.getFullYear(),
-          this.startDate.getMonth(),
-          this.startDate.getDate(),
-          this.startDate.getHours(),
-          this.startDate.getMinutes(),
-          this.startDate.getSeconds(),
-          this.startDate.getMilliseconds()
-        ),
-        end: Date.UTC(
-          this.endDate.getFullYear(),
-          this.endDate.getMonth(),
-          this.endDate.getDate(),
-          this.endDate.getHours(),
-          this.endDate.getMinutes(),
-          this.endDate.getSeconds(),
-          this.endDate.getMilliseconds()
-        ),
-      };
+    capitalisedLabel: (label) => label.charAt(0).toUpperCase() + label.slice(1),
+  },
+  computed: {
+    filteredUnits: function () {
+      return this.settings.units.filter((unit) => unit.active);
     },
-    calculateMinutes: function () {
-      let UTCDates = this.getUTCDates();
-      return Math.floor((UTCDates.end - UTCDates.start) / (1000 * 60));
-    },
-    calculateHours: function () {
-      let UTCDates = this.getUTCDates();
-      return Math.floor((UTCDates.end - UTCDates.start) / (1000 * 60 * 60));
-    },
-    calculateDays: function () {
-      let UTCDates = this.getUTCDates();
-      return Math.floor(
-        (UTCDates.end - UTCDates.start) / (1000 * 60 * 60 * 24)
-      );
-    },
-    calculateWeeks: function () {
-      let UTCDates = this.getUTCDates();
-      return Math.round(
-        (UTCDates.end - UTCDates.start) / (1000 * 60 * 60 * 24 * 7)
-      );
-    },
-    calculateMonths: function () {
-      return Math.round(
-        (this.endDate.getFullYear() - this.startDate.getFullYear()) * 12 +
-          this.endDate.getMonth() -
-          this.startDate.getMonth()
-      );
-    },
-    calculateYears: function () {
-      return Math.round(
-        this.endDate.getFullYear() - this.startDate.getFullYear()
-      );
+    units: function () {
+      const filteredUnitLabels = this.filteredUnits.map((unit) => unit.label);
+      if (this.concat.active === true) {
+        const values = DateTime.fromJSDate(this.endDate).diff(
+          DateTime.fromJSDate(this.startDate),
+          filteredUnitLabels
+        ).values;
+        return filteredUnitLabels.reduce((obj, x) => {
+          obj[x] = values[x];
+          return obj;
+        }, {});
+      }
+
+      return filteredUnitLabels.reduce((obj, x) => {
+        obj[x] = Math.round(
+          DateTime.fromJSDate(this.endDate).diff(
+            DateTime.fromJSDate(this.startDate),
+            x
+          ).values[x]
+        );
+        return obj;
+      }, {});
     },
   },
 };
@@ -129,14 +100,16 @@ export default {
 <style scoped>
 #main {
   width: 90%;
+  height: 100%;
 }
 
 .container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  height: 35%;
   column-gap: 8%;
-  align-items: bottom;
+  align-items: flex-end;
   margin: 0 auto 5rem auto;
 }
 
@@ -146,28 +119,36 @@ export default {
   column-gap: 0;
   text-align: center;
   margin: auto;
-  width: 30%;
+  width: 45%;
 }
 
 .results > * {
   flex: 1 1 50%;
 }
 
-@media only screen and (max-width: 1500px) {
+@media only screen and (max-width: 1550px) {
+  .container {
+    height: 25%;
+  }
   .results {
-    width: 50%;
+    width: 60%;
   }
 }
 
 @media only screen and (max-width: 1200px) {
+  .container {
+    height: 15%;
+    margin-bottom: 8rem;
+  }
   .results {
     width: 75%;
   }
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 950px) {
   .results > * {
     width: 100%;
+    flex: 1 1 100%;
   }
 }
 
@@ -178,13 +159,12 @@ export default {
 }
 
 .result {
-  margin: 0 auto 0 auto;
+  margin: 0 auto 1em auto;
 }
 
 .result:after {
   content: "";
   width: 30%;
-  color: #c9184a;
   display: flex;
   justify-content: center;
   line-height: 0.1em;
