@@ -3,30 +3,32 @@
     <div class="header">
       <h1>Time-Since</h1>
       <div>
-        <v-icon
-          name="calculator"
-          scale="1.1"
-          @click="display = 'calculator'"
-          class="icon-button"
-        ></v-icon>
-        <v-icon
-          name="cog"
-          scale="1.1"
-          @click="display = 'settings'"
-          class="icon-button"
-        ></v-icon>
+        <router-link to="/">
+          <v-icon
+            name="calculator"
+            scale="1.1"
+            @click="display = 'calculator'"
+            class="icon-button"
+            color="white"
+          />
+        </router-link>
+        <router-link to="/settings">
+          <v-icon
+            name="cog"
+            scale="1.1"
+            @click="display = 'settings'"
+            class="icon-button"
+            color="white"
+          />
+        </router-link>
       </div>
     </div>
 
-    <Calculator v-show="display === 'calculator'" :settings=settings />
-    <Settings v-show="display === 'settings'" :settings=settings />
+    <router-view :settings=settings></router-view>
   </div>
 </template>
 
 <script>
-import Calculator from "./components/Calculator.vue";
-import Settings from "./components/Settings.vue";
-
 import Icon from "vue-awesome/components/Icon";
 import "vue-awesome/icons/cog";
 import "vue-awesome/icons/calculator";
@@ -34,8 +36,6 @@ import "vue-awesome/icons/calculator";
 export default {
   name: "App",
   components: {
-    Calculator,
-    Settings,
     "v-icon": Icon,
   },
   data() {
@@ -99,12 +99,12 @@ export default {
           },
         ],
         general: {
-          "concat": {
+          concat: {
             type: "bool",
             active: false,
-            label: "concatenate units"
-          }
-        }
+            label: "concatenate units",
+          },
+        },
       },
     };
   },
