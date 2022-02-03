@@ -22,7 +22,7 @@ const router = new VueRouter({
 });
 
 Vue.use(VueGtag, {
-  config: { id: process.env.VUE_APP_GOOGLE_GTM },
+  config: { id: "GTM-MHKZTXC" },
 }, router);
 
 
