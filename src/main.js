@@ -25,6 +25,7 @@ Vue.use(VueGtag, {
   config: { id: process.env.VUE_APP_GOOGLE_GTM },
 }, router);
 
+console.log(process.env)
 
 new Vue({
   render: (h) => h(App),
