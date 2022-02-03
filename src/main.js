@@ -25,8 +25,6 @@ Vue.use(VueGtag, {
   config: { id: "GTM-MHKZTXC" },
 }, router);
 
-console.log(process.env)
-
 new Vue({
   render: (h) => h(App),
   router,
