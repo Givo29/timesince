@@ -14,8 +14,10 @@
     "luxon": "^2.1.1",
     "vue": "^2.6.11",
     "vue-awesome": "^4.3.1",
+    "vue-google-adsense": "^1.10.1",
     "vue-gtag": "^1.16.1",
     "vue-router": "^3.5.3",
+    "vue-script2": "^2.1.0",
     "vue2-datepicker": "^3.10.2"
   },
   "devDependencies": {
