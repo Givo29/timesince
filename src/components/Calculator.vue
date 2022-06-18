@@ -3,20 +3,21 @@
     <div class="container">
       <div>
         <h2>Start Date</h2>
-        <date-picker
+        <input
+          class="datepicker"
+          type="datetime-local"
           v-model="startDate"
-          :clearable="false"
-          :disabled-date="startDisable"
-        ></date-picker>
+          :max="this.endDate"
+        />
       </div>
       <div>
         <h2>End Date</h2>
-        <date-picker
+        <input
+          class="datepicker"
+          type="datetime-local"
           v-model="endDate"
-          :clearable="false"
-          :disabled-date="endDisable"
-          :shortcuts="dateShortcuts"
-        ></date-picker>
+          :min="this.startDate"
+        />
       </div>
     </div>
 
@@ -29,41 +30,28 @@
 </template>
 
 <script>
-import DatePicker from "vue2-datepicker";
-import "vue2-datepicker/index.css";
 import { DateTime } from "luxon";
 
 export default {
   name: "Calculator",
-  components: {
-    DatePicker,
-  },
   props: ["settings"],
   data() {
     return {
       startDate: DateTime.local()
         .plus({ years: -1 })
         .set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
-        .toJSDate(),
+        .toJSDate()
+        .toISOString()
+        .substring(0, 16),
       endDate: DateTime.local()
         .set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
-        .toJSDate(),
-      dateShortcuts: [
-        {
-          text: "Today",
-          onClick: () => new Date(new Date().setHours(0, 0, 0, 0)),
-        },
-      ],
+        .toJSDate()
+        .toISOString()
+        .substring(0, 16),
       concat: this.settings.general.concat,
     };
   },
   methods: {
-    startDisable: function (date) {
-      return date > this.endDate;
-    },
-    endDisable: function (date) {
-      return date < this.startDate;
-    },
     capitalisedLabel: (label) => label.charAt(0).toUpperCase() + label.slice(1),
   },
   computed: {
@@ -72,9 +60,11 @@ export default {
     },
     units: function () {
       const filteredUnitLabels = this.filteredUnits.map((unit) => unit.label);
+      const startDate = new Date(this.startDate);
+      const endDate = new Date(this.endDate);
       if (this.concat.active === true) {
-        const values = DateTime.fromJSDate(this.endDate).diff(
-          DateTime.fromJSDate(this.startDate),
+        const values = DateTime.fromJSDate(endDate).diff(
+          DateTime.fromJSDate(startDate),
           filteredUnitLabels
         ).values;
         return filteredUnitLabels.reduce((obj, x) => {
@@ -85,10 +75,8 @@ export default {
 
       return filteredUnitLabels.reduce((obj, x) => {
         obj[x] = Math.round(
-          DateTime.fromJSDate(this.endDate).diff(
-            DateTime.fromJSDate(this.startDate),
-            x
-          ).values[x]
+          DateTime.fromJSDate(endDate).diff(DateTime.fromJSDate(startDate), x)
+            .values[x]
         );
         return obj;
       }, {});
@@ -124,6 +112,13 @@ export default {
 
 .results > * {
   flex: 1 1 50%;
+}
+
+.datepicker {
+  padding: 0.5rem;
+  border-radius: 0.5em;
+  font-size: 1rem;
+  border: none;
 }
 
 @media only screen and (max-width: 1550px) {
