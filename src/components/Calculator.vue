@@ -37,17 +37,8 @@ export default {
   props: ["settings"],
   data() {
     return {
-      startDate: DateTime.local()
-        .plus({ years: -1 })
-        .set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
-        .toJSDate()
-        .toISOString()
-        .substring(0, 16),
-      endDate: DateTime.local()
-        .set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
-        .toJSDate()
-        .toISOString()
-        .substring(0, 16),
+      startDate: DateTime.now().plus({ years: -1 }).toISO().substring(0, 16),
+      endDate: DateTime.now().toISO().substring(0, 16),
       concat: this.settings.general.concat,
     };
   },
