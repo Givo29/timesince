@@ -6,7 +6,7 @@ Timesince is a minimal app to easily calculate the time between dates on the web
 
 Try it:
 - [time.joelgiovinazzo.com](https://time.joelgiovinazzo.com)
-- [times-since.com](https://times-since.com)
+- [time.giov.au](https://time.giov.au)
 
 ## Example
 ![times-since](https://user-images.githubusercontent.com/21019692/140445772-058e11df-a90b-4d39-b55c-cbb80f2e4d57.gif)
